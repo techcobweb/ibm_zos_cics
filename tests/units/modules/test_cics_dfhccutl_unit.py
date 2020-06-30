@@ -13,7 +13,7 @@ import pytest
 # from mock import call
 
 # Used my some mock modules, should match import directly below
-IMPORT_NAME = 'ansible_collections_ibm_zos_cics.plugins.modules.cics_dfhccutl'
+IMPORT_NAME = 'ibm_zos_cics.plugins.modules.cics_dfhccutl'
 
 dummy_dict1 = {
     'steplib': 'CTS550.CICS720.SDFHLOAD',

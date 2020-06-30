@@ -6,7 +6,7 @@ from __future__ import absolute_import, division, print_function
 __metaclass__ = type
 
 import pytest
-from ansible_collections_ibm_zos_cics.tests.helpers.ztest import ZTestHelper
+from ibm_zos_cics.tests.helpers.ztest import ZTestHelper
 import sys
 from mock import MagicMock
 import importlib

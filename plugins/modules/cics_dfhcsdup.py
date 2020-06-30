@@ -12,146 +12,395 @@ ANSIBLE_METADATA = {'metadata_version': '1.1',
                     'supported_by': 'community'}
 
 DOCUMENTATION = r"""
-module: cics_dfhcsdup
+module: cics_dfhcsdup_new
 author:
     - "Zhao Lu (@zlbjlu)"
-short_description: Run CICS system definition utility program DFHCSDUP
+short_description: CICS system definition utility program(DFHCSDUP)
 description:
-    - Run CICS system definition utility program DFHCSDUP to read from and
-      write to a CICS system definition (CSD) file.
-    - Manage CICS resource definitions using commands supplied as part of
-      DFHCSDUP.
-    - ALL the commands supplied by DFHCSDUP can be invoked through this
-      module, such as ADD, ALTER, COPY, DEFINE, DELETE, EXTRACT, etc.
+    - Run CICS system definition utility program DFHCSDUP to read from and write to a CICS system definition (CSD) file.
+    - Manage CICS resource definitions using commands supplied as part of DFHCSDUP.
+    - ALL the commands supplied by DFHCSDUP can be invoked through this module, such as ADD, ALTER, COPY, DEFINE, DELETE, EXTRACT, etc.
       Refer to CICS Resource Definition Guide for command usage.
 version_added: "2.9"
 options:
     parms:
-      description:
-          - The program arguments, e.g. -a='UPPERCASE'.
-      required: false
-      type: dict
-      suboptions:
-        uppercase:
-            description:
-                - Specifies that you want all output from DFHCSDUP to
-                  be in uppercase.
-            type: bool
-            required: false
-            default: false
-        access_mode:
-            description:
-                - Specifies whether you want read and write access or
-                  read-only access to the CSD.
-            type: str
-            required: false
-            default: rw
-            choices: [ rw, ro ]
-        compat:
-            description:
-                - Specifies whether the DFHCSDUP utility program is to
-                  run in compatibility mode.
-            type: bool
-            required: false
-            default: false
-        page_size:
-            description:
-                - Specifies the number of lines per page on output
-                  listings.
-                - Values range from 4 to 9999.
-            type: int
-            required: false
-            default: 60
+        description: The PARM parameter used by DFHCSDUP, e.g., -a='UPPERCASE'.
+        required: false
+        type: dict
+        suboptions:
+            uppercase:
+                description:
+                    - Specifies that you want all output from DFHCSDUP to be in uppercase.
+                type: bool
+                required: false
+                default: false
+            access_mode:
+                description:
+                    - Specifies whether you want read and write access or read-only access to the CSD.
+                type: str
+                required: false
+                default: 'rw'
+                choices: [ 'rw', 'ro' ]
+            compat:
+                description:
+                    - Specifies whether the DFHCSDUP utility program is to run in compatibility mode.
+                type: bool
+                required: false
+                default: false
+            page_size:
+                description:
+                    - Specifies the number of lines per page on output listings.
+                    - Values range from 4 to 9999.
+                type: int
+                required: false
+                default: 60
     steplib:
-      description:
-          - Specifies the library in which the utility is stored in.
-      required: true
-      type: str
+        description: Specifies the library in which the utility is stored in.
+        required: false
+        type: str
     dfhcsd:
-      description:
-          - Specifies the CSD file which you read from or write to.
-      required: true
-      type: str
+        description: Specifies the CSD file which you read from or write to.
+        required: true
+        type: str
     seccsd:
-      description:
-          - Specifies the CSD file which you read from or write to.
-          - Required if you specify the FROMCSD parameter on an APPEND,
-            COPY, or SERVICE command.
-      required: false
-      type: str
-      default: null
+        description:
+            - Specifies the CSD file which you read from or write to.
+            - Required if you specify the FROMCSD parameter on an APPEND, COPY, or SERVICE command.
+        required: false
+        type: str
     userprog_lib:
-      description:
-          - Specifies the library in which the utility is stored in.
-          - Required if you specify the EXTRACT command and need to do
-            some customized operations.
-      required: false
-      type: str
-      default: null
+        description:
+            - Specifies the library in which the utility is stored in.
+            - Required if you specify the EXTRACT command and need to do some customized operations.
+        required: false
+        type: str
     userprog_dd:
-      description:
-          - Specifies the dd names used by the user program.
-          - Required if you specify the EXTRACT command and need to do
-            some customized operations.
-      required: false
-      type: str
+        description:
+            - Specifies the dd names used by the user program.
+            - Required if you specify the EXTRACT command and need to do some customized operations.
+        required: false
+        type: str
     userprog_ds:
-      description:
-          - Specifies the input data set that is used by the user program.
-          - Required if you specify the EXTRACT command and need to do some
-            customized operations.
-      required: false
-      type: str
+        description:
+            - Specifies the input data set that is used by the user program.
+            - Required if you specify the EXTRACT command and need to do some customized operations.
+        type: str
+        required: false
     cmd_dsn:
-      description:
-          - Specify the file used in which the command statements are stored.
-          - Required if the parameter cmd_stmt is not specified.
-      type: str
-      required: false
-      default: null
+        description: Specify the file used in which the command statements are stored.
+        type: str
+        required: false
     cmd_str:
-      description:
-          - Specify the file used in which the command statements are stored.
-          - Required if the parameter cmd_stmt is not specified.
-      type: list
-      required: false
-      default: null
+        description: Specify the file used in which the command statements are stored.
+        type: list
+        required: false
     cmd_stmt:
-      description:
-          - Specify the command statements which would be invoked through
-            the utility.
-          - Required if the parameter cmd_file is not specified.
-      required: false
-      type: list
-      elements: dict
-      suboptions:
-          command_type:
-            description:
-                - Specify the command to be executed.
-            required: false
-            type: dict
-            suboptions:
-              list_name:
-                  description: The list name.
-                  required: false
-                  type: str
-              group_name:
-                  description: The group name.
-                  required: false
-                  type: str
-              resource_type:
-                  description: The resource type.
-                  required: false
-                  type: str
-              resource_name:
-                  description: The resource name.
-                  required: false
-                  type: str
-              attr_list:
-                  description: The resource attributes.
-                  required: false
-                  type: dict
-                  elements: dict
+        description:
+            - Specify the command statements which would be invoked through the utility.
+        type: list
+        required: false
+        default: null
+        elements: dict
+        suboptions:
+            add:
+                description: Add a group to a list.
+                required: false
+                type: str
+                suboptions:
+                    list_name:
+                        description: Specify the name of the list.
+                        required: true
+                        type: str
+                    group_name:
+                        description: Specify the name of the group.
+                        required: true
+                        type: str
+                    after:
+                        description: Specify AFTER to place the new group name after the existing group name.
+                        required: false
+                        type: str
+                    before:
+                        description: Specify BEFORE to place the new group name before the existing group name.
+                        required: false
+                        type: str
+            remove:
+                description: Remove a group name from a list.
+                required: false
+                type: dict
+                suboptions:
+                    list_name:
+                        description: Specify the name of the list.
+                        required: true
+                        type: str
+                    group_name:
+                        description: Specify the name of the group.
+                        required: true
+                        type: str
+            list:
+                description: Produce listings of the current status of the CSD file.
+                required: false
+                type: dict
+                suboptions:
+                    list_name:
+                        description: Specify the name of the list.
+                        required: false
+                        type: str
+                    group_name:
+                        description: Specify the name of the group.
+                        required: false
+                        type: str
+                    objects:
+                        description: Specify the level of detail required for each resource definition.
+                        required: false
+                        type: bool
+                    sigsumm:
+                        description: Show the definition signature for each of the resource definitions displayed.
+                        required: false
+                        type: bool
+                    all:
+                        description: Print summaries of all the definitions of lists and groups that are on the CSD file.
+                        required: false
+                        type: bool
+            extract:
+                description: Extract a resource definition, group, or list from the CSD file.
+                required: false
+                type: dict
+                suboptions:
+                    list_name:
+                        description: Specify the name of the list.
+                        required: false
+                        type: str
+                    group_name:
+                        description: Specify the name of the group.
+                        required: false
+                        type: str
+                    userprogram:
+                        description:
+                            - Specify the name of the user-written program that is to process the data retrieved
+                              by the EXTRACT command.
+                        required: true
+                        type: str
+                    objects:
+                        description: Specify the level of detail required for each resource definition.
+                        required: false
+                        type: bool
+            initialize:
+                description: Prepare a newly defined data set for use as a CSD file.
+                required: false
+                type: str
+            verify:
+                description: Remove internal locks on groups and lists.
+                required: false
+                type: str
+            process:
+                description: Apply maintenance to the CSD file for a specific APAR.
+                required: false
+                type: dict
+                suboptions:
+                    apar_num:
+                        description: The number of the APAR providing the maintenance.
+                        required: false
+                        type: str
+            upgrade:
+                description: Apply maintenance to the CSD file for a specific APAR.
+                required: false
+                type: dict
+                suboptions:
+                    using:
+                        description: Install IBM features onto CICS.
+                        required: false
+                        type: str
+                    replace:
+                        description: Specify the REPLACE option when you need to rerun the UPGRADE command.
+                        required: false
+                        type: bool
+            define:
+                description: Create new resource definitions.
+                required: false
+                type: dict
+                suboptions:
+                    list_name:
+                        description: Specify the name of the list.
+                        required: false
+                        type: str
+                    group_name:
+                        description: Specify the name of the group.
+                        required: true
+                        type: str
+                    resource_type:
+                        description: Specify the type of the resource.
+                        required: true
+                        type: str
+                    resource_name:
+                        description: Specify the name of the resource.
+                        required: true
+                        type: str
+                    attr_list:
+                        description:
+                            - The resource attributes.
+                            - Refer to CICS Resource Definition Guide for the supported attributes.
+                        required: false
+                        type: dict
+            userdefine:
+                description: Create new resource definitions using your own default values instead of the default values supplied by CICS.
+                required: false
+                type: dict
+                suboptions:
+                    group_name:
+                        description: Specify the name of the group.
+                        required: true
+                        type: str
+                    resource_type:
+                        description: Specify the type of the resource.
+                        required: true
+                        type: str
+                    resource_name:
+                        description: Specify the name of the resource.
+                        required: true
+                        type: str
+                    alias:
+                        description: Specify the alias name of the resource type to be searched for in the user-defined groups.
+                        required: false
+                        type: str
+                    attr_list:
+                        description:
+                            - The resource attributes.
+                            - Refer to CICS Resource Definition Guide for the supported attributes.
+                        required: false
+                        type: dict
+            scan:
+                description: SCAN all the IBM®-supplied groups and user-defined groups for a specified resource.
+                required: false
+                type: dict
+                suboptions:
+                    resource_type:
+                        description: Specify the type of the resource.
+                        required: true
+                        type: str
+                    resource_name:
+                        description: Specify the name of the resource.
+                        required: true
+                        type: str
+                    alias:
+                        description: Specify the alias name of the resource type to be searched for in the user-defined groups.
+                        required: false
+                        type: str
+            alter:
+                description: Change some or all of the attributes of an existing resource definition.
+                required: false
+                type: dict
+                suboptions:
+                    group_name:
+                        description: Specify the name of the group.
+                        required: true
+                        type: str
+                    resource_type:
+                        description: Specify the type of the resource.
+                        required: true
+                        type: str
+                    resource_name:
+                        description: Specify the name of the resource.
+                        required: true
+                        type: str
+                    attr_list:
+                        description:
+                            - The resource attributes.
+                            - Refer to CICS Resource Definition Guide for the supported attributes.
+                        required: false
+                        type: dict
+            delete:
+                description: Delete a single resource definition in a group.
+                required: false
+                type: dict
+                suboptions:
+                    list_name:
+                        description: Specify the name of the list.
+                        required: false
+                        type: str
+                    group_name:
+                        description: Specify the name of the group.
+                        required: false
+                        type: str
+                    resource_type:
+                        description: Specify the type of the resource.
+                        required: false
+                        type: str
+                    resource_name:
+                        description: Specify the name of the resource.
+                        required: false
+                        type: str
+                    remove:
+                        description:
+                            - The group will be removed from all lists that contained it unless UPGRADE commands are running.
+                        required: false
+                        type: bool
+                    all:
+                        description: Delete all the definitions.
+                        required: false
+                        type: bool
+            copy:
+                description: Copy resource definitions from one group to another group.
+                required: false
+                type: dict
+                suboptions:
+                    from_csd:
+                        description: Specify the ddname of the secondary CSD file.
+                        required: true
+                        type: str
+                    group_name:
+                        description: Specify the name of the group.
+                        required: true
+                        type: str
+                    resource_type:
+                        description: Specify the type of the resource.
+                        required: false
+                        type: str
+                    resource_name:
+                        description: Specify the name of the resource.
+                        required: false
+                        type: str
+                    to:
+                        description: Specify the target name of the list or group.
+                        required: true
+                        type: str
+                    replace:
+                        description: Replace the definitions in groupname2.
+                        required: false
+                        type: bool
+                    merge:
+                        description: Preserve the definitions in groupname2.
+                        required: false
+                        type: bool
+            append:
+                description: Add the groups in one list to the end of another list.
+                required: false
+                type: dict
+                suboptions:
+                    from_csd:
+                        description: Specify the ddname of the secondary CSD file.
+                        required: true
+                        type: str
+                    list_name:
+                        description: Specify the name of the list.
+                        required: true
+                        type: str
+                    to:
+                        description: Specify the target name of the list.
+                        required: true
+                        type: str
+            service:
+                description: Copy resource definitions from one group to another group.
+                required: false
+                type: dict
+                suboptions:
+                    from_csd:
+                        description: Specify the ddname of the secondary CSD file.
+                        required: true
+                        type: str
+                    level:
+                        description: Specify the the service level.
+                        required: false
+                        type: int
 """
 
 EXAMPLES = r"""
@@ -176,11 +425,6 @@ csd:
     returned : always
     type: str
     sample: "XXXXXXX.TEST.DFHCSD"
-cmds:
-    description: The CSD commands or command data set name.
-    returned : always
-    type: str
-    sample: ['ADD GROUP(GRP01) LIST(LST01)']
 content:
     description:
         - Holds additional information related to resource
@@ -188,7 +432,7 @@ content:
         - Return the message if error occurs, return the temporary
           data set used for message if no error.
     type: str
-    returned: if error
+    returned: always
     sample: "XXXXXX.TEST.MSGPS"
 changed:
     description: Indicates if any changes were made during module operation.
